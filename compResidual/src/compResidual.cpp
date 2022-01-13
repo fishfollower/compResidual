@@ -363,17 +363,22 @@ template<class Type>
 Type objective_function<Type>::operator() ()
 {
   DATA_INTEGER(code)
+  DATA_INTEGER(dim);    
   DATA_VECTOR(obs);
   DATA_VECTOR(pred);
+  DATA_IVECTOR(idx);  
   DATA_VECTOR_INDICATOR(keep, obs);
-  PARAMETER(dummy);
-  Type nll=dummy*dummy;
-  
-  if(code==0){ // multivariate normal 
+  Type nll=Type(0);
+  if(code==0){ // multivariate normal
 
   }
   if(code==1){ // multinomial
-
+    vector<Type> p(dim);
+    for(int i=0; i<idx.size(); ++i){
+      p = pred.segment(idx(i),dim);
+      p /= sum(p);
+      nll += -dmultinom_osa(vector<Type>(obs.segment(idx(i),dim)),p,keep.segment(idx(i),dim),true);
+    }
   }
   if(code==2){ // Dirichlet
 
@@ -387,5 +392,7 @@ Type objective_function<Type>::operator() ()
   if(code==5){ // Multiplicative logistic normal   
 
   }
+  PARAMETER(dummy);
+  nll += dummy*dummy;  
   return nll;
 }
