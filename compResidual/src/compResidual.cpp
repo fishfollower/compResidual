@@ -362,17 +362,18 @@ Type dlogisticnormal_osa(vector<Type> obs, vector<Type> mu,  matrix<Type> S, vec
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
-  DATA_INTEGER(code)
-  DATA_INTEGER(dim);    
-  DATA_VECTOR(obs);
-  DATA_VECTOR(pred);
-  DATA_IVECTOR(idx);  
-  DATA_VECTOR_INDICATOR(keep, obs);
   Type nll=Type(0);
+  DATA_INTEGER(code)
+  
   if(code==0){ // multivariate normal
 
   }
   if(code==1){ // multinomial
+    DATA_INTEGER(dim);    
+    DATA_VECTOR(obs);
+    DATA_VECTOR(pred);
+    DATA_IVECTOR(idx);  
+    DATA_VECTOR_INDICATOR(keep, obs);
     vector<Type> p(dim);
     for(int i=0; i<idx.size(); ++i){
       p = pred.segment(idx(i),dim);
@@ -381,7 +382,14 @@ Type objective_function<Type>::operator() ()
     }
   }
   if(code==2){ // Dirichlet
-
+    DATA_INTEGER(dim);    
+    DATA_VECTOR(obs);
+    DATA_VECTOR(alpha);
+    DATA_IVECTOR(idx);  
+    DATA_VECTOR_INDICATOR(keep, obs);
+    for(int i=0; i<idx.size(); ++i){
+      nll += -ddirichlet_osa(vector<Type>(obs.segment(idx(i),dim)), vector<Type>(alpha.segment(idx(i),dim)), keep.segment(idx(i),dim), true);
+    }
   }
   if(code==3){ // Dirichlet-multinomial  
 
