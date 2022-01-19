@@ -280,7 +280,8 @@ Type ddirmultinom_osa(vector<Type> obs, vector<Type> alpha, data_indicator<vecto
   obs=obs(o); alpha=alpha(o); k=k(o); l=l(o); h=h(o);
  
   int dim = obs.size();
-  Type N = obs.sum(), ll = 0.0;
+  // Type N = obs.sum(); 
+  Type ll = 0.0;
   vector<Type> alphas_a(2), obs_a(2);
   for(int a = 1; a < dim; a++){
     obs_a(0) = obs(a-1);
@@ -392,7 +393,15 @@ Type objective_function<Type>::operator() ()
     }
   }
   if(code==3){ // Dirichlet-multinomial  
-
+    DATA_INTEGER(dim);
+    DATA_VECTOR(obs);
+    DATA_VECTOR(alpha);
+    DATA_IVECTOR(idx);
+    DATA_VECTOR_INDICATOR(keep,obs);
+    for(int i=0; i<idx.size(); ++i){
+      nll += -ddirmultinom_osa(vector<Type>(obs.segment(idx(i),dim)), vector<Type>(alpha.segment(idx(i),dim)), keep.segment(idx(i),dim), true);
+    }
+    
   }
   if(code==4){ // Additive logistic normal 
 
