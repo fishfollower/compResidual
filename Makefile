@@ -51,7 +51,7 @@ check:
 	$(R) CMD check $(TARBALL)
 
 clean:
-	\rm -f install doc-update compResidual_* compResidual.pdf compResidual/src/*.o compResidual/src/*.so
+	\rm -f install doc-update compResidual_* compResidual.pdf compResidual/src/*.o compResidual/src/*.so compResidual/src/*.dll
 
 
 NPROCS:=1
