@@ -22,7 +22,8 @@ resMulti <- function(obs, pred){
   obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
   opt <- nlminb(obj$par, obj$fn, obj$gr)
   res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", discrete=TRUE, method="cdf", trace=FALSE)
-  res <- matrix(res$residual, nrow=dat$dim)
+  use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
+  res <- matrix(res$residual[use], nrow=(dat$dim-1))
   res
 }
 
