@@ -109,20 +109,20 @@ resDirM <- function(obs, alpha){
 reslogistN <- function(obs, mu, S, do_mult){
   res2 <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
-  dat<-list()
-  dat$code <- 4 # Logistic-normal
-  dat$do_mult <- as.integer(do_mult) # 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
-  dat$dim <-nrow(obs)  
-  dat$obs<-as.vector(obs[,k])
-  dat$mu<-as.vector(mu[,k])
-  if (is.matrix(S)) dat$S <- as.matrix(S) else dat$S <- S[[k]]
-  dat$idx<-seq(1,length(obs[,k]))-1
-  param<-list(dummy=0)
-  obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
-  opt <- nlminb(obj$par, obj$fn, obj$gr)
-  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE)
-  #use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
-  #res <- matrix(res$residual[use], nrow=(dat$dim-1))
-  res2 <- cbind(res2, res)
+    dat<-list()
+    dat$code <- 4 # Logistic-normal
+    dat$do_mult <- as.integer(do_mult) # 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
+    dat$dim <-nrow(obs)  
+    dat$obs<-as.vector(obs[,k])
+    dat$mu<-as.vector(mu[,k])
+    if (is.matrix(S)) dat$S <- as.matrix(S) else dat$S <- S[[k]]
+    #dat$idx<-seq(1,length(obs[,k]))-1
+    param<-list(dummy=0)
+    obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
+    opt <- nlminb(obj$par, obj$fn, obj$gr)
+    res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE)
+    #use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
+    #res <- matrix(res$residual[use], nrow=(dat$dim-1))
+    res2 <- cbind(res2, res)
   }
 }

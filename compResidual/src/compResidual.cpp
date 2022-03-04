@@ -407,19 +407,11 @@ Type objective_function<Type>::operator() ()
     DATA_INTEGER(dim);
     DATA_VECTOR(obs);
     DATA_VECTOR(mu);
-    //DATA_VECTOR(logsig);
     DATA_INTEGER(do_mult); // 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
-    DATA_IVECTOR(idx);
     DATA_VECTOR_INDICATOR(keep,obs);
     DATA_MATRIX(S);
-    //vector<Type> sig=exp(logsig);
-    //Type rho = -1 + 2/(1+exp(-logitrho));
-    //matrix<Type> S(mu.size(),mu.size());
-    //for(int i = 0;i < mu.size(); i++) for(int j = 0; j < mu.size(); j++) S(i,j) = pow(rho,Type(abs(i-j))) * sig(i) * sig(j);
-    for(int i=0; i<idx.size(); ++i){
-      nll += -dlogisticnormal_osa(vector<Type>(obs.segment(idx(i),dim)), mu, S, vector<Type>(keep.segment(idx(i),dim)), do_mult, 1);
-    }
-  } 
+    nll += -dlogisticnormal_osa(obs, mu, S, keep, do_mult, true);
+  }
   PARAMETER(dummy);
   nll += dummy*dummy;  
   return nll;
