@@ -39,6 +39,13 @@ install: $(TARBALL)
 	$(R) CMD INSTALL --preclean $(TARBALL)
 	@touch install
 
+debug-install: $(PACKAGE)/src/compResidual.so
+	$(R) CMD INSTALL $(PACKAGE)
+
+$(PACKAGE)/src/compResidual.so: $(PACKAGE)/src/compResidual.cpp $(CPP_SRC)
+	touch $(PACKAGE)/src/compResidual.cpp
+	cd $(PACKAGE)/src; echo "library(TMB); compile('compResidual.cpp','-O0 -g', libinit=FALSE)" | $(R) --slave
+
 
 unexport TEXINPUTS
 pdf: $(PACKAGE).pdf
