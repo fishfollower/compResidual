@@ -7,7 +7,7 @@
 resMulti(obs, pred)
 }
 \arguments{
-\item{obs}{An observation assumed to be multinomial}
+\item{obs}{An observation matrix assumed to be multinomial}
 
 \item{pred}{predicted observations}
 }

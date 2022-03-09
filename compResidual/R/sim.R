@@ -33,3 +33,20 @@ rdirM <- function(n,N,alpha){
   }
   replicate(n, as.vector(stats::rmultinom(1, N, rd1(alpha))))
 }
+
+
+##' Simulate Logistic-normal observations 
+##' @param mu Vector of mean values 
+##' @param sigma Vector of standard errors  
+##' @param mult Multiplicative logistic-normal if TRUE, otherwise additive
+##' @return Matrix of logistic-normal observations 
+##' @details The model ...
+##' @useDynLib compResidual
+##' @export
+rlogistN = function(mu,sigma, mult=F){
+  x = MASS::mvrnorm(1,mu,sigma)
+  if(mult) p = exp(x)/cumprod(1+exp(x))
+  else p = exp(x)/(1+sum(exp(x)))
+  return(c(p, 1-sum(p)))
+}
+
