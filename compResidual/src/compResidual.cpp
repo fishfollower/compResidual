@@ -404,7 +404,6 @@ Type objective_function<Type>::operator() ()
     
   }
   if(code==4){ // Logistic-normal
-    DATA_INTEGER(dim);
     DATA_VECTOR(obs);
     DATA_VECTOR(mu);
     DATA_INTEGER(do_mult); // 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal

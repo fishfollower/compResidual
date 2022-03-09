@@ -44,7 +44,7 @@ rdirM <- function(n,N,alpha){
 ##' @useDynLib compResidual
 ##' @export
 rlogistN = function(mu,sigma, mult=F){
-  x = mvtnorm::rmvnorm(1,mu,sigma)
+  x = MASS::mvrnorm(1,mu,sigma)
   if(mult) p = exp(x)/cumprod(1+exp(x))
   else p = exp(x)/(1+sum(exp(x)))
   return(c(p, 1-sum(p)))
