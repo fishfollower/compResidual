@@ -1,3 +1,36 @@
+##' Residual multivariate-normal model 
+##' @param obs An observation matrix assumed to be multivariate-normal distributed   
+##' @param mu predicted observations
+##' @param S covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
+##' @return One step ahead randomized quantile residuals 
+##' @details The model ...
+##' @useDynLib compResidual
+##' @export
+##' @examples
+##' mu <- matrix(0,ncol=100, nrow=6)
+##' sigma <- diag(nrow(mu))
+##' o <- sapply(1:100, function(x) MASS::mvrnorm(1,mu[,k],sigma))
+##' res <- resmvnorm(o, mu, sigma)
+##' plot(as.vector(res))
+
+resmvnorm <- function(obs, mu, S, do_mult){
+  res2 <- c()
+  for (k in 1:ncol(obs)){ # for each column (in case S is a list)
+    dat<-list()
+    dat$code <- 0 # Multivariate-normal
+    dat$obs<-as.vector(obs[,k])
+    dat$mu<-as.vector(mu[,k])
+    if (is.matrix(S)) dat$S <- as.matrix(S) else dat$S <- as.matrix(S[[k]])
+    param<-list(dummy=0)
+    obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
+    opt <- nlminb(obj$par, obj$fn, obj$gr)
+    res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", trace=FALSE)
+    res2 <- cbind(res2, res$residual)
+  }
+  res2
+}
+
+
 ##' Residual multinomial model 
 ##' @param obs An observation matrix assumed to be multinomial   
 ##' @param pred predicted observations

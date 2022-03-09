@@ -366,8 +366,14 @@ Type objective_function<Type>::operator() ()
   Type nll=Type(0);
   DATA_INTEGER(code)
   
-  if(code==0){ // multivariate normal
-
+  if(code==0){ // multivariate-normal
+    DATA_VECTOR(obs);
+    DATA_VECTOR(mu);
+    DATA_VECTOR_INDICATOR(keep,obs);
+    DATA_MATRIX(S);
+    using namespace density;
+    MVNORM_t<Type> mvnorm(S);
+    nll += mvnorm(obs-mu, keep);
   }
   if(code==1){ // multinomial
     DATA_INTEGER(dim);    
