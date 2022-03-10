@@ -9,12 +9,12 @@
 ##' @examples
 ##' mu <- matrix(0,ncol=100, nrow=6)
 ##' sigma <- diag(nrow(mu))
-##' o <- sapply(1:100, function(x) MASS::mvrnorm(1,mu[,k],sigma))
+##' o <- sapply(1:100, function(x) MASS::mvrnorm(1,mu[,1],sigma))
 ##' res <- resmvnorm(o, mu, sigma)
-##' plot(as.vector(res))
+##' plot(res)
 
 resmvnorm <- function(obs, mu, S, do_mult){
-  res2 <- c()
+  res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
     dat<-list()
     dat$code <- 0 # Multivariate-normal
@@ -24,10 +24,11 @@ resmvnorm <- function(obs, mu, S, do_mult){
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)
-    res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", trace=FALSE)
-    res2 <- cbind(res2, res$residual)
+    tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", trace=FALSE)
+    res <- cbind(res, tmp$residual)
   }
-  res2
+  class(res)<-"cres"
+  res
 }
 
 
@@ -42,7 +43,7 @@ resmvnorm <- function(obs, mu, S, do_mult){
 ##' o<-rmultinom(100, 25, c(.2,.2,.1,.1,.1,.3))
 ##' p<-matrix(rep(25*c(.2,.2,.1,.1,.1,.3), 100), nrow=6)
 ##' res<-resMulti(o,p)
-##' plot(as.vector(res))
+##' plot(res)
 
 resMulti <- function(obs, pred){
   dat<-list()
@@ -57,6 +58,7 @@ resMulti <- function(obs, pred){
   res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", discrete=TRUE, method="cdf", trace=FALSE)
   use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
   res <- matrix(res$residual[use], nrow=(dat$dim-1))
+  class(res)<-"cres"
   res
 }
 
@@ -72,7 +74,7 @@ resMulti <- function(obs, pred){
 ##' a<-matrix(rep(1000*c(.2,.2,.1,.1,.1,.3), 100), nrow=6)
 ##' o<-rdirichlet(100,a[,1])
 ##' res<-resDir(o,a)
-##' plot(as.vector(res))
+##' plot(res)
 
 resDir <- function(obs, alpha){
   if(!all.equal(apply(obs, 2, sum), rep(1,ncol(obs)))) stop("Dirichlet observations should be proportions, so sum to 1")
@@ -88,6 +90,7 @@ resDir <- function(obs, alpha){
   res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="cdf", trace=FALSE)
   use <- 1:nrow(res)%%dat$dim!=0 # no residual for last proportion
   res <- matrix(res$residual[use], nrow=(dat$dim-1))
+  class(res)<-"cres"
   res
 }
 
@@ -103,7 +106,7 @@ resDir <- function(obs, alpha){
 ##' a<-matrix(rep(1000*c(.2,.2,.1,.1,.1,.3), 100), nrow=6)
 ##' o<-rdirM(100,1000, a[,1])
 ##' res<-resDirM(o,a)
-##' plot(as.vector(res))
+##' plot(res)
 
 resDirM <- function(obs, alpha){
   dat<-list()
@@ -118,6 +121,7 @@ resDirM <- function(obs, alpha){
   res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="cdf", discrete=TRUE, trace=FALSE)
   use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
   res <- matrix(res$residual[use], nrow=(dat$dim-1))
+  class(res)<-"cres"
   res
 }
 
@@ -137,10 +141,10 @@ resDirM <- function(obs, alpha){
 ##' do_mult <- F
 ##' o <- sapply(1:100, function(x) rlogistN(mu[,1], sigma, do_mult))
 ##' res <- reslogistN(o, mu, sigma, do_mult)
-##' plot(as.vector(res))
+##' plot(res)
 
 reslogistN <- function(obs, mu, S, do_mult){
-  res2 <- c()
+  res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
     dat<-list()
     dat$code <- 4 # Logistic-normal
@@ -151,9 +155,10 @@ reslogistN <- function(obs, mu, S, do_mult){
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)
-    suppressWarnings(res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE))
+    suppressWarnings(tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE))
     use <- 1:(length(dat$obs)-1) # no residual for last group
-    res2 <- cbind(res2, res$residual[use])
+    res <- cbind(res, tmp$residual[use])
   }
-  res2
+  class(res)<-"cres"
+  res
 }
