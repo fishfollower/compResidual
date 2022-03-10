@@ -24,5 +24,5 @@ The model ...
 o<-rmultinom(100, 25, c(.2,.2,.1,.1,.1,.3))
 p<-matrix(rep(25*c(.2,.2,.1,.1,.1,.3), 100), nrow=6)
 res<-resMulti(o,p)
-plot(as.vector(res))
+plot(res)
 }
