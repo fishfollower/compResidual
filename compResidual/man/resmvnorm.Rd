@@ -25,7 +25,7 @@ The model ...
 \examples{
 mu <- matrix(0,ncol=100, nrow=6)
 sigma <- diag(nrow(mu))
-o <- sapply(1:100, function(x) MASS::mvrnorm(1,mu[,k],sigma))
+o <- sapply(1:100, function(x) MASS::mvrnorm(1,mu[,1],sigma))
 res <- resmvnorm(o, mu, sigma)
 plot(res)
 }

@@ -26,7 +26,7 @@ plot.cres<-function(x, ...){
   }
   sample <- rep(1:ncol(x), each=nrow(x))
   composition <- rep(1:nrow(x), ncol(x))
-  stockassessment::plotby(sample, composition, x, bubblescale = 0.3, xlab="")
+  plotby(sample, composition, x, bubblescale = 0.3, xlab="")
   add_legend(x, cex.text=0.8, bubblescale = 0.3)
   # ACF
   acf(as.vector(x), main="")  
