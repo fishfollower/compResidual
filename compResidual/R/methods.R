@@ -26,7 +26,9 @@ plot.cres<-function(x, ...){
   }
   sample <- rep(1:ncol(x), each=nrow(x))
   composition <- rep(1:nrow(x), ncol(x))
-  plotby(sample, composition, x, bubblescale = 0.3, xlab="")
+  if (!is.null(rownames(x))) yname <- rownames(x) else yname=1:nrow(x)
+  plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n")
+  axis(2, at=1:nrow(x), labels = yname)
   add_legend(x, cex.text=0.8, bubblescale = 0.3)
   # ACF
   acf(as.vector(x), main="")  
@@ -34,7 +36,7 @@ plot.cres<-function(x, ...){
   qqnorm(x, col=col, main="")
   abline(0,1)
   #abline(v = apply(x,1,mean), col = col, lwd = 2)
-  legend("topleft", col=col, legend=1:nrow(x), pch=1, bty="n", cex=0.8, ncol=2)
+  legend("topleft", col=col, legend=yname, pch=1, bty="n", cex=0.8, ncol=2)
   # plot vector
   plot(as.vector(x), col=col, ylab="residuals", xlab="")
   par(op)
