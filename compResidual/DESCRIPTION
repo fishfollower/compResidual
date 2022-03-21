@@ -9,4 +9,4 @@ Imports: TMB
 LinkingTo: TMB, RcppEigen
 LazyData: TRUE
 BugReports: https://github.com/fishfollower/compResidual/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

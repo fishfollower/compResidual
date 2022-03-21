@@ -8,12 +8,13 @@
 ##' @export
 ##' @examples
 ##' mu <- matrix(0,ncol=100, nrow=6)
-##' sigma <- diag(nrow(mu))
-##' o <- sapply(1:100, function(x) MASS::mvrnorm(1,mu[,1],sigma))
+##' sigma <- diag(nrow(mu))+0.5
+##' o <- replicate(100, MASS::mvrnorm(1,mu[,1],sigma))
 ##' res <- resmvnorm(o, mu, sigma)
 ##' plot(res)
 
 resmvnorm <- function(obs, mu, S, do_mult){
+  obs<-as.matrix(obs)
   res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
     dat<-list()
@@ -46,6 +47,7 @@ resmvnorm <- function(obs, mu, S, do_mult){
 ##' plot(res)
 
 resMulti <- function(obs, pred){
+  obs<-as.matrix(obs)
   dat<-list()
   dat$code<-1 # multinomial    
   dat$dim<-nrow(obs)  
@@ -77,6 +79,7 @@ resMulti <- function(obs, pred){
 ##' plot(res)
 
 resDir <- function(obs, alpha){
+  obs<-as.matrix(obs)
   if(!all.equal(apply(obs, 2, sum), rep(1,ncol(obs)))) stop("Dirichlet observations should be proportions, so sum to 1")
   dat<-list()
   dat$code <- 2 # Dirichlet   
@@ -109,6 +112,7 @@ resDir <- function(obs, alpha){
 ##' plot(res)
 
 resDirM <- function(obs, alpha){
+  obs<-as.matrix(obs)
   dat<-list()
   dat$code <- 3 # Dirichlet-multinomial   
   dat$dim <-nrow(obs)  
@@ -144,6 +148,7 @@ resDirM <- function(obs, alpha){
 ##' plot(res)
 
 reslogistN <- function(obs, mu, S, do_mult){
+  obs<-as.matrix(obs)
   res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
     dat<-list()
