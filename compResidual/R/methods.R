@@ -1,43 +1,58 @@
 ##' Plot residual object 
 ##' @method plot cres
-##' @param  x residual object as returned from one of the residual functions.
+##' @param  x Residual object as returned from one of the residual functions
+##' @param pick_one Number of the plot to provide if one of the 4 plots printed by default needs to be extracted 
 ##' @param  ... extra arguments
 ##' @importFrom graphics par
-##' @details gives a 4 plot overview of the residuals.  
+##' @details The function produces a 4 plot overview of the residuals by default or one specific plot if the @param pick_one argument is provided.
+##' 
+##' Plot 1: Bubble plot of the residuals
+##' Plot 2: Autocorrelation and cross-correlation plot for all dimensions of the residual matrix (rows, columns and diagonal)
+##' Plot 3: Q-Q plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)
+##' Plot 4: Simple plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)   
 ##' @export
-plot.cres<-function(x, ...){
-  op <- par(mfrow=c(2,2), mar=c(4,4,2,2))
+plot.cres<-function(x, pick_one=NULL, ...){
+  if (missing(pick_one)){
+    op <- par(mfrow=c(2,2), mar=c(4,4,2,2)) 
+    } else {
+      if (!pick_one %in% 1:4) stop("pick_one should be a number between 1 and 4")
+      op <- par(mfrow=c(1,1))
+    }
+  if (!is.null(rownames(x))) yname <- rownames(x) else yname=1:nrow(x)
   col <- rep(1:nrow(x), ncol(x))
   # bubble plot
-  add_legend <- function(x, cex.text=1, ...) {
-    # opar <- par(fig=c(0, 1, 0, 1), oma=c(0, 0, 0, 0), 
-    #             mar=c(0, 0, 0, 0), new=TRUE)
-    # on.exit(par(opar))
-    #plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n')
-    zscale <- pretty(x,min.n=4)
-    uu<-par("usr")
-    yy<-rep(uu[3]+.03*(uu[4]-uu[3]), length(zscale))
-    xx<-seq(uu[1]+.10*(uu[2]-uu[1]),uu[1]+.4*(uu[2]-uu[1]), length=length(zscale))
-    text(xx,yy,labels=zscale, cex=cex.text)
-    colb <- ifelse(zscale<0, rgb(1, 0, 0, alpha=.5), rgb(0, 0, 1, alpha=.5))
-    bs<-1
-    if("bubblescale"%in%names(list(...))) bs <- list(...)$bubblescale
-    points(xx,yy,cex=sqrt(abs(zscale))/max(sqrt(abs(zscale)), na.rm=TRUE)*5*bs, pch=19, col=colb)
+  if (pick_one==1 || missing(pick_one)) {
+    add_legend <- function(x, cex.text=1, ...) {
+      # opar <- par(fig=c(0, 1, 0, 1), oma=c(0, 0, 0, 0), 
+      #             mar=c(0, 0, 0, 0), new=TRUE)
+      # on.exit(par(opar))
+      #plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n')
+      zscale <- pretty(x,min.n=4)
+      uu<-par("usr")
+      yy<-rep(uu[3]+.03*(uu[4]-uu[3]), length(zscale))
+      xx<-seq(uu[1]+.10*(uu[2]-uu[1]),uu[1]+.4*(uu[2]-uu[1]), length=length(zscale))
+      text(xx,yy,labels=zscale, cex=cex.text)
+      colb <- ifelse(zscale<0, rgb(1, 0, 0, alpha=.5), rgb(0, 0, 1, alpha=.5))
+      bs<-1
+      if("bubblescale"%in%names(list(...))) bs <- list(...)$bubblescale
+      points(xx,yy,cex=sqrt(abs(zscale))/max(sqrt(abs(zscale)), na.rm=TRUE)*5*bs, pch=19, col=colb)
+    }
+    sample <- rep(1:ncol(x), each=nrow(x))
+    composition <- rep(1:nrow(x), ncol(x))
+    plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n")
+    axis(2, at=1:nrow(x), labels = yname)
+    add_legend(x, cex.text=0.8, bubblescale = 0.3)
   }
-  sample <- rep(1:ncol(x), each=nrow(x))
-  composition <- rep(1:nrow(x), ncol(x))
-  if (!is.null(rownames(x))) yname <- rownames(x) else yname=1:nrow(x)
-  plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n", ylab="Composition")
-  axis(2, at=1:nrow(x), labels = yname)
-  add_legend(x, cex.text=0.8, bubblescale = 0.3)
   # ACF
-  acf(as.vector(x), main="")  
+  if (pick_one==2 || missing(pick_one)) acf(as.vector(x), main="")  
   # Q-Q plot
-  qqnorm(x, col=col, main="")
-  abline(0,1)
-  #abline(v = apply(x,1,mean), col = col, lwd = 2)
-  legend("topleft", col=col, legend=yname, pch=1, bty="n", cex=0.8, ncol=2)
+  if (pick_one==3 || missing(pick_one)) {
+    qqnorm(x, col=col, main="")
+    abline(0,1)
+    #abline(v = apply(x,1,mean), col = col, lwd = 2)
+    legend("topleft", col=col, legend=yname, pch=1, bty="n", cex=0.8, ncol=2)
+  }
   # plot vector
-  plot(as.vector(x), col=col, ylab="residuals", xlab="")
+  if (pick_one==4 || missing(pick_one)) plot(as.vector(x), col=col, ylab="residuals", xlab="")
   par(op)
 }

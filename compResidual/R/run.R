@@ -1,9 +1,12 @@
-##' Residual multivariate-normal model 
-##' @param obs An observation matrix assumed to be multivariate-normal distributed   
-##' @param mu predicted observations
-##' @param S covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
-##' @return One step ahead randomized quantile residuals 
-##' @details The model ...
+##' Residuals for multivariate-normal observations 
+##' @param obs Matrix of observations assumed to be multivariate-normal distributed   
+##' @param mu Matrix of predicted observations
+##' @param S Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
+##' @param ... Additional arguments to pass to TMB::oneStepPredict
+##' @return One step ahead quantile residuals 
+##' @details The model estimates the one step ahead quantile residuals for observations that are multivariate-normal distributed.
+##'  
+##' The matrices should be created such as each column is one sample from a multivariate-normal distribution, the columns are assumed independent (i.e. the compositions are the rows). 
 ##' @useDynLib compResidual
 ##' @export
 ##' @examples
@@ -13,7 +16,7 @@
 ##' res <- resmvnorm(o, mu, sigma)
 ##' plot(res)
 
-resmvnorm <- function(obs, mu, S, do_mult){
+resmvnorm <- function(obs, mu, S, ...){
   obs<-as.matrix(obs)
   res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
@@ -25,7 +28,7 @@ resmvnorm <- function(obs, mu, S, do_mult){
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)
-    tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", trace=FALSE)
+    tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", trace=FALSE, ...)
     res <- cbind(res, tmp$residual)
   }
   class(res)<-"cres"
@@ -33,11 +36,14 @@ resmvnorm <- function(obs, mu, S, do_mult){
 }
 
 
-##' Residual multinomial model 
-##' @param obs An observation matrix assumed to be multinomial   
-##' @param pred predicted observations
+##' Residuals for multinomial observations 
+##' @param obs Matrix of observations assumed to be multinomial distributed  
+##' @param pred Matrix of predicted observations or probabilities
+##' @param ... Additional arguments to pass to TMB::oneStepPredict
 ##' @return One step ahead randomized quantile residuals 
-##' @details The model ...
+##' @details The model estimates the one step ahead randomized quantile residuals for observations that are multinomial distributed.
+##'  
+##' The matrices should be created such as each column is one sample from a multinomial distribution, the columns are assumed independent (i.e. the compositions are the rows). 
 ##' @useDynLib compResidual
 ##' @export
 ##' @examples
@@ -46,7 +52,7 @@ resmvnorm <- function(obs, mu, S, do_mult){
 ##' res<-resMulti(o,p)
 ##' plot(res)
 
-resMulti <- function(obs, pred){
+resMulti <- function(obs, pred, ...){
   obs<-as.matrix(obs)
   dat<-list()
   dat$code<-1 # multinomial    
@@ -57,7 +63,7 @@ resMulti <- function(obs, pred){
   param<-list(dummy=0)
   obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
   opt <- nlminb(obj$par, obj$fn, obj$gr)
-  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", discrete=TRUE, method="cdf", trace=FALSE)
+  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", discrete=TRUE, method="cdf", trace=FALSE, ...)
   use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
   res <- matrix(res$residual[use], nrow=(dat$dim-1))
   class(res)<-"cres"
@@ -65,11 +71,14 @@ resMulti <- function(obs, pred){
 }
 
 
-##' Residual Dirichlet model 
-##' @param obs An observation matrix (proportions) assumed to be Dirichlet distributed   
-##' @param alpha concentration parameter
-##' @return One step ahead randomized quantile residuals 
-##' @details The model ...
+##' Residuals for Dirichlet observations 
+##' @param obs Matrix of observations (proportions) assumed to be Dirichlet distributed   
+##' @param alpha Matrix of concentration parameters
+##' @param ... Additional arguments to pass to TMB::oneStepPredict
+##' @return One step ahead quantile residuals 
+##' @details The model estimates the one step ahead quantile residuals for observations that are Dirichlet distributed.
+##'  
+##' The matrices should be created such as each column is one sample from a Dirichlet distribution, the columns are assumed independent (i.e. the compositions are the rows). 
 ##' @useDynLib compResidual
 ##' @export
 ##' @examples
@@ -78,7 +87,7 @@ resMulti <- function(obs, pred){
 ##' res<-resDir(o,a)
 ##' plot(res)
 
-resDir <- function(obs, alpha){
+resDir <- function(obs, alpha, ...){
   obs<-as.matrix(obs)
   if(!all.equal(apply(obs, 2, sum), rep(1,ncol(obs)))) stop("Dirichlet observations should be proportions, so sum to 1")
   dat<-list()
@@ -90,7 +99,7 @@ resDir <- function(obs, alpha){
   param<-list(dummy=0)
   obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
   opt <- nlminb(obj$par, obj$fn, obj$gr)
-  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="cdf", trace=FALSE)
+  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="cdf", trace=FALSE, ...)
   use <- 1:nrow(res)%%dat$dim!=0 # no residual for last proportion
   res <- matrix(res$residual[use], nrow=(dat$dim-1))
   class(res)<-"cres"
@@ -98,11 +107,14 @@ resDir <- function(obs, alpha){
 }
 
 
-##' Residual Dirichlet-multinomial model 
-##' @param obs An observation matrix (proportions) assumed to be Dirichlet-multinomial distributed   
-##' @param alpha concentration parameter
+##' Residuals for Dirichlet-multinomial observations 
+##' @param obs Matrix of observations assumed to be Dirichlet-multinomial distributed   
+##' @param alpha Matrix of concentration parameters
+##' @param ... Additional arguments to pass to TMB::oneStepPredict
 ##' @return One step ahead randomized quantile residuals 
-##' @details The model ...
+##' @details The model estimates the one step ahead randomized quantile residuals for observations that are Dirichlet-multinomial distributed.
+##'  
+##' The matrices should be created such as each column is one sample from a Dirichlet-multinomial distribution, the columns are assumed independent (i.e. the compositions are the rows). 
 ##' @useDynLib compResidual
 ##' @export
 ##' @examples
@@ -111,7 +123,7 @@ resDir <- function(obs, alpha){
 ##' res<-resDirM(o,a)
 ##' plot(res)
 
-resDirM <- function(obs, alpha){
+resDirM <- function(obs, alpha, ...){
   obs<-as.matrix(obs)
   dat<-list()
   dat$code <- 3 # Dirichlet-multinomial   
@@ -122,7 +134,7 @@ resDirM <- function(obs, alpha){
   param<-list(dummy=0)
   obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
   opt <- nlminb(obj$par, obj$fn, obj$gr)
-  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="cdf", discrete=TRUE, trace=FALSE)
+  res <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="cdf", discrete=TRUE, trace=FALSE, ...)
   use <- 1:nrow(res)%%dat$dim!=0 # no residual for last group
   res <- matrix(res$residual[use], nrow=(dat$dim-1))
   class(res)<-"cres"
@@ -130,13 +142,16 @@ resDirM <- function(obs, alpha){
 }
 
 
-##' Residual Logistic-normal model 
-##' @param obs An observation matrix (proportions) assumed to be Logistic-normal distributed   
-##' @param mu predicted observations
-##' @param S covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
+##' Residuals for logistic-normal observations 
+##' @param obs Matrix of observations (proportions) assumed to be logistic-normal distributed   
+##' @param mu Matrix of predicted observations
+##' @param S Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
 ##' @param do_mult 0 if additive logistic-normal, 1 if multiplicative logistic-normal
-##' @return One step ahead randomized quantile residuals 
-##' @details The model ...
+##' @param ... Additional arguments to pass to TMB::oneStepPredict
+##' @return One step ahead quantile residuals 
+##' @details The model estimates the one step ahead quantile residuals for observations that are logistic-normal distributed.
+##'  
+##' The matrices should be created such as each column is one sample from a logistic-normal distribution, the columns are assumed independent (i.e. the compositions are the rows). 
 ##' @useDynLib compResidual
 ##' @export
 ##' @examples
@@ -147,7 +162,7 @@ resDirM <- function(obs, alpha){
 ##' res <- reslogistN(o, mu, sigma, do_mult)
 ##' plot(res)
 
-reslogistN <- function(obs, mu, S, do_mult){
+reslogistN <- function(obs, mu, S, do_mult, ...){
   obs<-as.matrix(obs)
   res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case S is a list)
@@ -160,7 +175,7 @@ reslogistN <- function(obs, mu, S, do_mult){
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)
-    suppressWarnings(tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE))
+    suppressWarnings(tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE, ...))
     use <- 1:(length(dat$obs)-1) # no residual for last group
     res <- cbind(res, tmp$residual[use])
   }
