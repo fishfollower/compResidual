@@ -2,23 +2,27 @@
 % Please edit documentation in R/run.R
 \name{resDirM}
 \alias{resDirM}
-\title{Residual Dirichlet-multinomial model}
+\title{Residuals for Dirichlet-multinomial observations}
 \usage{
-resDirM(obs, alpha)
+resDirM(obs, alpha, ...)
 }
 \arguments{
-\item{obs}{An observation matrix (proportions) assumed to be Dirichlet-multinomial distributed}
+\item{obs}{Matrix of observations assumed to be Dirichlet-multinomial distributed}
 
-\item{alpha}{concentration parameter}
+\item{alpha}{Matrix of concentration parameters}
+
+\item{...}{Additional arguments to pass to TMB::oneStepPredict}
 }
 \value{
 One step ahead randomized quantile residuals
 }
 \description{
-Residual Dirichlet-multinomial model
+Residuals for Dirichlet-multinomial observations
 }
 \details{
-The model ...
+The model estimates the one step ahead randomized quantile residuals for observations that are Dirichlet-multinomial distributed.
+ 
+The matrices should be created such as each column is one sample from a Dirichlet-multinomial distribution, the columns are assumed independent (i.e. the compositions are the rows).
 }
 \examples{
 a<-matrix(rep(1000*c(.2,.2,.1,.1,.1,.3), 100), nrow=6)

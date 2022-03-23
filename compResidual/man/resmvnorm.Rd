@@ -2,25 +2,29 @@
 % Please edit documentation in R/run.R
 \name{resmvnorm}
 \alias{resmvnorm}
-\title{Residual multivariate-normal model}
+\title{Residuals for multivariate-normal observations}
 \usage{
-resmvnorm(obs, mu, S, do_mult)
+resmvnorm(obs, mu, S, ...)
 }
 \arguments{
-\item{obs}{An observation matrix assumed to be multivariate-normal distributed}
+\item{obs}{Matrix of observations assumed to be multivariate-normal distributed}
 
-\item{mu}{predicted observations}
+\item{mu}{Matrix of predicted observations}
 
-\item{S}{covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
+\item{S}{Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
+
+\item{...}{Additional arguments to pass to TMB::oneStepPredict}
 }
 \value{
-One step ahead randomized quantile residuals
+One step ahead quantile residuals
 }
 \description{
-Residual multivariate-normal model
+Residuals for multivariate-normal observations
 }
 \details{
-The model ...
+The model estimates the one step ahead quantile residuals for observations that are multivariate-normal distributed.
+ 
+The matrices should be created such as each column is one sample from a multivariate-normal distribution, the columns are assumed independent (i.e. the compositions are the rows).
 }
 \examples{
 mu <- matrix(0,ncol=100, nrow=6)

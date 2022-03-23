@@ -2,23 +2,27 @@
 % Please edit documentation in R/run.R
 \name{resDir}
 \alias{resDir}
-\title{Residual Dirichlet model}
+\title{Residuals for Dirichlet observations}
 \usage{
-resDir(obs, alpha)
+resDir(obs, alpha, ...)
 }
 \arguments{
-\item{obs}{An observation matrix (proportions) assumed to be Dirichlet distributed}
+\item{obs}{Matrix of observations (proportions) assumed to be Dirichlet distributed}
 
-\item{alpha}{concentration parameter}
+\item{alpha}{Matrix of concentration parameters}
+
+\item{...}{Additional arguments to pass to TMB::oneStepPredict}
 }
 \value{
-One step ahead randomized quantile residuals
+One step ahead quantile residuals
 }
 \description{
-Residual Dirichlet model
+Residuals for Dirichlet observations
 }
 \details{
-The model ...
+The model estimates the one step ahead quantile residuals for observations that are Dirichlet distributed.
+ 
+The matrices should be created such as each column is one sample from a Dirichlet distribution, the columns are assumed independent (i.e. the compositions are the rows).
 }
 \examples{
 a<-matrix(rep(1000*c(.2,.2,.1,.1,.1,.3), 100), nrow=6)

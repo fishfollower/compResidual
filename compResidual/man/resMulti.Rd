@@ -2,23 +2,27 @@
 % Please edit documentation in R/run.R
 \name{resMulti}
 \alias{resMulti}
-\title{Residual multinomial model}
+\title{Residuals for multinomial observations}
 \usage{
-resMulti(obs, pred)
+resMulti(obs, pred, ...)
 }
 \arguments{
-\item{obs}{An observation matrix assumed to be multinomial}
+\item{obs}{Matrix of observations assumed to be multinomial distributed}
 
-\item{pred}{predicted observations}
+\item{pred}{Matrix of predicted observations or probabilities}
+
+\item{...}{Additional arguments to pass to TMB::oneStepPredict}
 }
 \value{
 One step ahead randomized quantile residuals
 }
 \description{
-Residual multinomial model
+Residuals for multinomial observations
 }
 \details{
-The model ...
+The model estimates the one step ahead randomized quantile residuals for observations that are multinomial distributed.
+ 
+The matrices should be created such as each column is one sample from a multinomial distribution, the columns are assumed independent (i.e. the compositions are the rows).
 }
 \examples{
 o<-rmultinom(100, 25, c(.2,.2,.1,.1,.1,.3))

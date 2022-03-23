@@ -2,27 +2,31 @@
 % Please edit documentation in R/run.R
 \name{reslogistN}
 \alias{reslogistN}
-\title{Residual Logistic-normal model}
+\title{Residuals for logistic-normal observations}
 \usage{
-reslogistN(obs, mu, S, do_mult)
+reslogistN(obs, mu, S, do_mult, ...)
 }
 \arguments{
-\item{obs}{An observation matrix (proportions) assumed to be Logistic-normal distributed}
+\item{obs}{Matrix of observations (proportions) assumed to be logistic-normal distributed}
 
-\item{mu}{predicted observations}
+\item{mu}{Matrix of predicted observations}
 
-\item{S}{covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
+\item{S}{Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
 
 \item{do_mult}{0 if additive logistic-normal, 1 if multiplicative logistic-normal}
+
+\item{...}{Additional arguments to pass to TMB::oneStepPredict}
 }
 \value{
-One step ahead randomized quantile residuals
+One step ahead quantile residuals
 }
 \description{
-Residual Logistic-normal model
+Residuals for logistic-normal observations
 }
 \details{
-The model ...
+The model estimates the one step ahead quantile residuals for observations that are logistic-normal distributed.
+ 
+The matrices should be created such as each column is one sample from a logistic-normal distribution, the columns are assumed independent (i.e. the compositions are the rows).
 }
 \examples{
 mu <- matrix(0,ncol=100, nrow=5)
