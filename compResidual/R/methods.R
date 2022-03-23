@@ -27,7 +27,7 @@ plot.cres<-function(x, ...){
   sample <- rep(1:ncol(x), each=nrow(x))
   composition <- rep(1:nrow(x), ncol(x))
   if (!is.null(rownames(x))) yname <- rownames(x) else yname=1:nrow(x)
-  plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n")
+  plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n", ylab="Composition")
   axis(2, at=1:nrow(x), labels = yname)
   add_legend(x, cex.text=0.8, bubblescale = 0.3)
   # ACF
