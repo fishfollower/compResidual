@@ -185,4 +185,38 @@ plotby <-function(x=NULL, y=NULL, z=NULL, x.line=NULL, y.line=NULL, z.line=NULL,
 }
 
 
-
+##' ACF on the residuals
+##' @param x Residual object as returned from one of the residual functions
+##' @param what Dimension to use between "row", "column" or "diagonal"
+##' @importFrom stats acf
+##' @details Function used to estimate ACF for the 3 different dimensions of the residual matrix. 
+##' 
+##' It is assumed that the first composition group is in the first row and the last in the last row.
+acf_res <- function(x, what){
+  dim <- dim(x)
+  tmp <- matrix(NA, nrow=dim[1], ncol=dim[2])
+  if (what=="row"){
+    v <- cbind(x, tmp)
+    v <- as.vector(t(v))
+    v <- v[-((length(v)-dim[2]+1):length(v))]
+    return(acf(v, na.action = na.pass, lag.max = (dim[1]-1), plot = FALSE))
+  } else {
+    if (what=="column"){
+      v <- rbind(x, tmp)
+      v <- as.vector(v)
+      v <- v[-((length(v)-dim[1]+1):length(v))]
+      return(acf(v, na.action = na.pass, lag.max = (dim[1]-1), plot = FALSE))
+    } else {
+      if (what=="diagonal"){
+        tmp <- matrix(NA, nrow=dim[1], ncol=(dim[1]-1+dim[2]))
+        idx <- cbind(as.vector(row(x)), as.vector(col(x)+(dim[1]-1)-row(x)+1))
+        tmp[idx] <- x
+        v <- rbind(tmp, tmp*NA)
+        v <- as.vector(v)
+        return(acf(v, na.action = na.pass, lag.max = (dim[1]-1), plot = FALSE))
+      } else {
+        stop("The argument 'what' should be 'row', 'column', or 'diagonal'")
+      }
+    }
+  }
+}

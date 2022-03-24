@@ -3,11 +3,11 @@
 ##' @param  x Residual object as returned from one of the residual functions
 ##' @param pick_one Number of the plot to provide if one of the 4 plots printed by default needs to be extracted 
 ##' @param  ... extra arguments
-##' @importFrom graphics par
-##' @details The function produces a 4 plot overview of the residuals by default or one specific plot if the @param pick_one argument is provided.
+##' @importFrom graphics par plot legend abline
+##' @details The function produces a 4 plot overview of the residuals by default or one specific plot if the 'pick_one' argument is provided.
 ##' 
 ##' Plot 1: Bubble plot of the residuals
-##' Plot 2: Autocorrelation and cross-correlation plot for all dimensions of the residual matrix (rows, columns and diagonal)
+##' Plot 2: Autocorrelation and cross-correlation plot for all dimensions of the residual matrix (rows, columns and diagonal) with 95% confidence interval
 ##' Plot 3: Q-Q plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)
 ##' Plot 4: Simple plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)   
 ##' @export
@@ -44,7 +44,22 @@ plot.cres<-function(x, pick_one=NULL, ...){
     add_legend(x, cex.text=0.8, bubblescale = 0.3)
   }
   # ACF
-  if (pick_one==2 || missing(pick_one)) acf(as.vector(x), main="")  
+  if (pick_one==2 || missing(pick_one)) {
+    acfr <- acf_res(x, "row")
+    acfc <- acf_res(x, "column")
+    acfd <- acf_res(x, "diagonal")
+    ci <- 1.96/sqrt(length(x))
+    low <- as.numeric(min(c(acfr$acf, acfc$acf, acfd$acf)))
+    ylow <- max(abs(c(ci,low)))
+    lcol=c("#7fc97f", "#beaed4", "#fdc086")
+    plot(y=as.vector(acfr$acf), x=as.vector(acfr$lag), type = "h", ylim=c(-ylow*1.2,1), col=lcol[1], lwd=2, ylab="ACF", xlab="lag", ...)
+    lines(y=as.vector(acfc$acf), x=as.vector(acfc$lag)+0.05, type = "h", col=lcol[2], lwd=2)
+    lines(y=as.vector(acfd$acf), x=as.vector(acfd$lag)+0.1, type = "h", col=lcol[3], lwd=2)
+    abline(h=0)
+    abline(h=c(-ci,ci), lty=2)
+    legend("topright", col=lcol, legend=c("row", "column", "diagonal"), bty="n", lwd=2)
+    #acf(as.vector(x), main="") 
+  }
   # Q-Q plot
   if (pick_one==3 || missing(pick_one)) {
     qqnorm(x, col=col, main="")

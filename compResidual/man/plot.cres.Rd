@@ -4,10 +4,12 @@
 \alias{plot.cres}
 \title{Plot residual object}
 \usage{
-\method{plot}{cres}(x, ...)
+\method{plot}{cres}(x, pick_one = NULL, ...)
 }
 \arguments{
-\item{x}{residual object as returned from one of the residual functions.}
+\item{x}{Residual object as returned from one of the residual functions}
+
+\item{pick_one}{Number of the plot to provide if one of the 4 plots printed by default needs to be extracted}
 
 \item{...}{extra arguments}
 }
@@ -15,5 +17,10 @@
 Plot residual object
 }
 \details{
-gives a 4 plot overview of the residuals.
+The function produces a 4 plot overview of the residuals by default or one specific plot if the 'pick_one' argument is provided.
+
+Plot 1: Bubble plot of the residuals
+Plot 2: Autocorrelation and cross-correlation plot for all dimensions of the residual matrix (rows, columns and diagonal) with 95% confidence interval
+Plot 3: Q-Q plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)
+Plot 4: Simple plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)
 }
