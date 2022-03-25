@@ -52,3 +52,20 @@ plot(res)
 
 Instead of providing the probability matrix it is also allowed to provide the predicted observations (N*P).  
 
+
+## Principle
+
+### One-step-ahead (OSA) quantile residuals for continuous non-normal independent observations
+
+If the observations $(x_1,\ldots,x_n)$ are continuous, univariate, and independent, but originating from a distribution of which is not a normal distribution, but has cumulative distribution function (cdf) $F_x$, then independent and normally distributed residuals can be obtained via transformation. First, transforming the observations via the cdf will lead to quantities which follow a uniform distribution $u_i = F_x(x_i)$. This can be explained by the fact that $u_i \in (0,1)$ and the cdf of $u$ is $F_u(u) = P(F_x(X)<u) = P(X<F^{-1}_x(u)) = F_x(F^{-1}_x(u)) = u$, which is the distribution function for the uniform distribution. Secondly, transforming these uniformly distributed quantities $u_1,...,u_k$ by the inverse cdf of the standard normal distribution $\Phi^{-1}$ will lead to residuals which follow a standard normal distribution if the model is correct. This can be seen by calculating the cdf for the transformed $P(\Phi^{-1}(U)<r) = P(U<\Phi(r)) = \Phi(r)$ , so the wanted cdf. Collectively these quantile residuals are defined simply as: $r_i =\Phi^{-1}(F_x(x_i))$. The model is defining the cdf of the observations, so if the model is incorrect, then the residuals will deviate systematically from a standard normal distribution. 
+
+### OSA randomized quantile residuals for discrete independent observations 
+
+If the observations are discrete, but still univariate and independent, then the distribution function $F_x$ is a step function. In this discrete case, the transformation by the distribution function needs an additional step. The probability mass at a given value $x_i$ needs to be transformed onto the interval from $F(x_i-\epsilon)$ to $F(x_i)$. The transformation into uniform(0,1) distributed quantities can be achieved by sampling from the uniform distribution for that interval, so $u_i \sim U(F(x_i-\epsilon), F(x_i))$. The final step to get standard normal residuals is the same transformation by the inverse cdf of the standard normal distribution $r_i = \Phi^{-1}(u_i)$. These randomized quantile residuals will again have the desired properties (independence and normality).
+
+### OSA residuals to remove dependence in dependent observations
+
+The OSA residual of the i'th observation is computed using one of the methods described above depending on the observations being continuous or discrete (quantile or randomized quantile residuals), but instead of using the cdf of the observation in isolation, the cdf of the predicted distribution of the i'th prediction conditioned on all previous observations is used. This allows the resulting residuals to become independent standard normal if the model is correct. 
+
+
+More details are available in the following paper \url{...}
