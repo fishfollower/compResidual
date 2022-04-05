@@ -2,6 +2,7 @@
 ##' @param n Number of simulations   
 ##' @param alpha concentration parameter
 ##' @return Matrix of Dirichlet observations 
+##' @importFrom stats rgamma
 ##' @details The model ...
 ##' @useDynLib compResidual
 ##' @export
@@ -37,14 +38,14 @@ rdirM <- function(n,N,alpha){
 
 ##' Simulate Logistic-normal observations 
 ##' @param mu Vector of mean values 
-##' @param sigma Vector of standard errors  
+##' @param Sigma Covariance matrix  
 ##' @param mult Multiplicative logistic-normal if TRUE, otherwise additive
-##' @return Matrix of logistic-normal observations 
+##' @return Matrix of logistic-normal observations
 ##' @details The model ...
 ##' @useDynLib compResidual
 ##' @export
-rlogistN = function(mu,sigma, mult=F){
-  x = MASS::mvrnorm(1,mu,sigma)
+rlogistN = function(mu, Sigma, mult=FALSE){
+  x = MASS::mvrnorm(1,mu,Sigma)
   if(mult) p = exp(x)/cumprod(1+exp(x))
   else p = exp(x)/(1+sum(exp(x)))
   return(c(p, 1-sum(p)))

@@ -12,9 +12,9 @@ Type objective_function<Type>::operator() ()
     DATA_VECTOR(obs);
     DATA_VECTOR(mu);
     DATA_VECTOR_INDICATOR(keep,obs);
-    DATA_MATRIX(S);
+    DATA_MATRIX(Sigma);
     using namespace density;
-    MVNORM_t<Type> mvnorm(S);
+    MVNORM_t<Type> mvnorm(Sigma);
     nll += mvnorm(obs-mu, keep);
   }
   if(code==1){ // multinomial
@@ -56,8 +56,8 @@ Type objective_function<Type>::operator() ()
     DATA_VECTOR(mu);
     DATA_INTEGER(do_mult); // 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
     DATA_VECTOR_INDICATOR(keep,obs);
-    DATA_MATRIX(S);
-    nll += -dlogisticnormal_osa(obs, mu, S, keep, do_mult, true);
+    DATA_MATRIX(Sigma);
+    nll += -dlogisticnormal_osa(obs, mu, Sigma, keep, do_mult, true);
   }
   PARAMETER(dummy);
   nll += dummy*dummy;  

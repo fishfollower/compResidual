@@ -4,14 +4,14 @@
 \alias{reslogistN}
 \title{Residuals for logistic-normal observations}
 \usage{
-reslogistN(obs, mu, S, do_mult, ...)
+reslogistN(obs, mu, Sigma, do_mult, ...)
 }
 \arguments{
 \item{obs}{Matrix of observations (proportions) assumed to be logistic-normal distributed}
 
 \item{mu}{Matrix of predicted observations}
 
-\item{S}{Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
+\item{Sigma}{Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
 
 \item{do_mult}{0 if additive logistic-normal, 1 if multiplicative logistic-normal}
 
@@ -30,9 +30,9 @@ The matrices should be created such as each column is one sample from a logistic
 }
 \examples{
 mu <- matrix(0,ncol=100, nrow=5)
-sigma <- diag(nrow(mu))
-do_mult <- F
-o <- sapply(1:100, function(x) rlogistN(mu[,1], sigma, do_mult))
-res <- reslogistN(o, mu, sigma, do_mult)
+Sigma <- diag(nrow(mu))
+do_mult <- FALSE
+o <- sapply(1:100, function(x) rlogistN(mu[,1], Sigma, do_mult))
+res <- reslogistN(o, mu, Sigma, do_mult)
 plot(res)
 }

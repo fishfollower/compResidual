@@ -3,7 +3,8 @@
 ##' @param  x Residual object as returned from one of the residual functions
 ##' @param pick_one Number of the plot to provide if one of the 4 plots printed by default needs to be extracted 
 ##' @param  ... extra arguments
-##' @importFrom graphics par plot legend abline
+##' @importFrom graphics par plot legend abline lines points text
+##' @importFrom stats qqnorm
 ##' @details The function produces a 4 plot overview of the residuals by default or one specific plot if the 'pick_one' argument is provided.
 ##' 
 ##' Plot 1: Bubble plot of the residuals

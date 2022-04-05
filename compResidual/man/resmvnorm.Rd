@@ -4,14 +4,14 @@
 \alias{resmvnorm}
 \title{Residuals for multivariate-normal observations}
 \usage{
-resmvnorm(obs, mu, S, ...)
+resmvnorm(obs, mu, Sigma, ...)
 }
 \arguments{
 \item{obs}{Matrix of observations assumed to be multivariate-normal distributed}
 
 \item{mu}{Matrix of predicted observations}
 
-\item{S}{Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
+\item{Sigma}{Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column}
 
 \item{...}{Additional arguments to pass to TMB::oneStepPredict}
 }
@@ -28,8 +28,8 @@ The matrices should be created such as each column is one sample from a multivar
 }
 \examples{
 mu <- matrix(0,ncol=100, nrow=6)
-sigma <- diag(nrow(mu))+0.5
-o <- replicate(100, MASS::mvrnorm(1,mu[,1],sigma))
-res <- resmvnorm(o, mu, sigma)
+Sigma <- diag(nrow(mu))+0.5
+o <- replicate(100, MASS::mvrnorm(1,mu[,1],Sigma))
+res <- resmvnorm(o, mu, Sigma)
 plot(res)
 }

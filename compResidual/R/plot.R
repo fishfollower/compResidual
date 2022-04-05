@@ -16,8 +16,9 @@
 ##' @param ylim normal graphical parameter
 ##' @param zmax internally used to scale bubbles similarly 
 ##' @param axes normal graphical parameter
-##' @param ... additional graphical parameters 
-##' @importFrom graphics plot layout axis box mtext legend
+##' @param ... additional graphical parameters
+##' @importFrom stats na.pass
+##' @importFrom graphics plot layout axis box mtext legend lines points
 ##' @importFrom grDevices gray rgb
 ##' @details Function used for splitting plots e.g. used to plot residuals 
 ##' @export

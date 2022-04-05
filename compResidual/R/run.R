@@ -1,9 +1,10 @@
 ##' Residuals for multivariate-normal observations 
 ##' @param obs Matrix of observations assumed to be multivariate-normal distributed   
 ##' @param mu Matrix of predicted observations
-##' @param S Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
+##' @param Sigma Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
 ##' @param ... Additional arguments to pass to TMB::oneStepPredict
-##' @return One step ahead quantile residuals 
+##' @return One step ahead quantile residuals
+##' @importFrom stats nlminb
 ##' @details The model estimates the one step ahead quantile residuals for observations that are multivariate-normal distributed.
 ##'  
 ##' The matrices should be created such as each column is one sample from a multivariate-normal distribution, the columns are assumed independent (i.e. the compositions are the rows). 
@@ -11,20 +12,20 @@
 ##' @export
 ##' @examples
 ##' mu <- matrix(0,ncol=100, nrow=6)
-##' sigma <- diag(nrow(mu))+0.5
-##' o <- replicate(100, MASS::mvrnorm(1,mu[,1],sigma))
-##' res <- resmvnorm(o, mu, sigma)
+##' Sigma <- diag(nrow(mu))+0.5
+##' o <- replicate(100, MASS::mvrnorm(1,mu[,1],Sigma))
+##' res <- resmvnorm(o, mu, Sigma)
 ##' plot(res)
 
-resmvnorm <- function(obs, mu, S, ...){
+resmvnorm <- function(obs, mu, Sigma, ...){
   obs<-as.matrix(obs)
   res <- c()
-  for (k in 1:ncol(obs)){ # for each column (in case S is a list)
+  for (k in 1:ncol(obs)){ # for each column (in case Sigma is a list)
     dat<-list()
     dat$code <- 0 # Multivariate-normal
     dat$obs<-as.vector(obs[,k])
     dat$mu<-as.vector(mu[,k])
-    if (is.matrix(S)) dat$S <- as.matrix(S) else dat$S <- as.matrix(S[[k]])
+    if (is.matrix(Sigma)) dat$Sigma <- as.matrix(Sigma) else dat$Sigma <- as.matrix(Sigma[[k]])
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)
@@ -40,7 +41,8 @@ resmvnorm <- function(obs, mu, S, ...){
 ##' @param obs Matrix of observations assumed to be multinomial distributed  
 ##' @param pred Matrix of predicted observations or probabilities
 ##' @param ... Additional arguments to pass to TMB::oneStepPredict
-##' @return One step ahead randomized quantile residuals 
+##' @return One step ahead randomized quantile residuals
+##' @importFrom stats nlminb
 ##' @details The model estimates the one step ahead randomized quantile residuals for observations that are multinomial distributed.
 ##'  
 ##' The matrices should be created such as each column is one sample from a multinomial distribution, the columns are assumed independent (i.e. the compositions are the rows). 
@@ -75,7 +77,8 @@ resMulti <- function(obs, pred, ...){
 ##' @param obs Matrix of observations (proportions) assumed to be Dirichlet distributed   
 ##' @param alpha Matrix of concentration parameters
 ##' @param ... Additional arguments to pass to TMB::oneStepPredict
-##' @return One step ahead quantile residuals 
+##' @return One step ahead quantile residuals
+##' @importFrom stats nlminb
 ##' @details The model estimates the one step ahead quantile residuals for observations that are Dirichlet distributed.
 ##'  
 ##' The matrices should be created such as each column is one sample from a Dirichlet distribution, the columns are assumed independent (i.e. the compositions are the rows). 
@@ -111,7 +114,8 @@ resDir <- function(obs, alpha, ...){
 ##' @param obs Matrix of observations assumed to be Dirichlet-multinomial distributed   
 ##' @param alpha Matrix of concentration parameters
 ##' @param ... Additional arguments to pass to TMB::oneStepPredict
-##' @return One step ahead randomized quantile residuals 
+##' @return One step ahead randomized quantile residuals
+##' @importFrom stats nlminb
 ##' @details The model estimates the one step ahead randomized quantile residuals for observations that are Dirichlet-multinomial distributed.
 ##'  
 ##' The matrices should be created such as each column is one sample from a Dirichlet-multinomial distribution, the columns are assumed independent (i.e. the compositions are the rows). 
@@ -145,10 +149,11 @@ resDirM <- function(obs, alpha, ...){
 ##' Residuals for logistic-normal observations 
 ##' @param obs Matrix of observations (proportions) assumed to be logistic-normal distributed   
 ##' @param mu Matrix of predicted observations
-##' @param S Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
+##' @param Sigma Covariance matrix, either one matrix to use for columns of obs or a list of covariance matrices for each column
 ##' @param do_mult 0 if additive logistic-normal, 1 if multiplicative logistic-normal
 ##' @param ... Additional arguments to pass to TMB::oneStepPredict
-##' @return One step ahead quantile residuals 
+##' @return One step ahead quantile residuals
+##' @importFrom stats nlminb
 ##' @details The model estimates the one step ahead quantile residuals for observations that are logistic-normal distributed.
 ##'  
 ##' The matrices should be created such as each column is one sample from a logistic-normal distribution, the columns are assumed independent (i.e. the compositions are the rows). 
@@ -156,22 +161,22 @@ resDirM <- function(obs, alpha, ...){
 ##' @export
 ##' @examples
 ##' mu <- matrix(0,ncol=100, nrow=5)
-##' sigma <- diag(nrow(mu))
-##' do_mult <- F
-##' o <- sapply(1:100, function(x) rlogistN(mu[,1], sigma, do_mult))
-##' res <- reslogistN(o, mu, sigma, do_mult)
+##' Sigma <- diag(nrow(mu))
+##' do_mult <- FALSE
+##' o <- sapply(1:100, function(x) rlogistN(mu[,1], Sigma, do_mult))
+##' res <- reslogistN(o, mu, Sigma, do_mult)
 ##' plot(res)
 
-reslogistN <- function(obs, mu, S, do_mult, ...){
+reslogistN <- function(obs, mu, Sigma, do_mult, ...){
   obs<-as.matrix(obs)
   res <- c()
-  for (k in 1:ncol(obs)){ # for each column (in case S is a list)
+  for (k in 1:ncol(obs)){ # for each column (in case Sigma is a list)
     dat<-list()
     dat$code <- 4 # Logistic-normal
     dat$do_mult <- as.integer(do_mult) # 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
     dat$obs<-as.vector(obs[,k])
     dat$mu<-as.vector(mu[,k])
-    if (is.matrix(S)) dat$S <- as.matrix(S) else dat$S <- as.matrix(S[[k]])
+    if (is.matrix(Sigma)) dat$Sigma <- as.matrix(Sigma) else dat$Sigma <- as.matrix(Sigma[[k]])
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)

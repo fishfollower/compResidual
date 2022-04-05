@@ -4,12 +4,12 @@
 \alias{rlogistN}
 \title{Simulate Logistic-normal observations}
 \usage{
-rlogistN(mu, sigma, mult = F)
+rlogistN(mu, Sigma, mult = FALSE)
 }
 \arguments{
 \item{mu}{Vector of mean values}
 
-\item{sigma}{Vector of standard errors}
+\item{Sigma}{Covariance matrix}
 
 \item{mult}{Multiplicative logistic-normal if TRUE, otherwise additive}
 }
