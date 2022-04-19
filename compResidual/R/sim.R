@@ -3,7 +3,7 @@
 ##' @param alpha concentration parameter
 ##' @return Matrix of Dirichlet observations 
 ##' @importFrom stats rgamma
-##' @details The model ...
+##' @details This function simulates Dirichlet observations.
 ##' @useDynLib compResidual
 ##' @export
 
@@ -22,7 +22,7 @@ rdirichlet <- function(n,alpha){
 ##' @param N Sum of observations  
 ##' @param alpha concentration parameter
 ##' @return Matrix of Dirichlet-multinomial observations 
-##' @details The model ...
+##' @details This function simulates Dirichlet-multinomial observations.
 ##' @useDynLib compResidual
 ##' @export
 
@@ -36,12 +36,12 @@ rdirM <- function(n,N,alpha){
 }
 
 
-##' Simulate Logistic-normal observations 
+##' Simulate logistic-normal observations 
 ##' @param mu Vector of mean values 
 ##' @param Sigma Covariance matrix  
 ##' @param mult Multiplicative logistic-normal if TRUE, otherwise additive
 ##' @return Matrix of logistic-normal observations
-##' @details The model ...
+##' @details This function simulates logistic-normal observations.
 ##' @useDynLib compResidual
 ##' @export
 rlogistN = function(mu, Sigma, mult=FALSE){
