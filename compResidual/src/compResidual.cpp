@@ -54,10 +54,14 @@ Type objective_function<Type>::operator() ()
   if(code==4){ // Logistic-normal
     DATA_VECTOR(obs);
     DATA_VECTOR(mu);
-    DATA_INTEGER(do_mult); // 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
-    DATA_VECTOR_INDICATOR(keep,obs);
     DATA_MATRIX(Sigma);
-    nll += -dlogisticnormal_osa(obs, mu, Sigma, keep, do_mult, true);
+    DATA_VECTOR_INDICATOR(keep,obs);
+
+    using namespace density;
+    MVNORM_t<Type> mvnorm(Sigma);
+    
+    nll += mvnorm(obs-mu, keep);
+      
   }
   PARAMETER(dummy);
   nll += dummy*dummy;  

@@ -1,97 +1,9 @@
-namespace my_atomic {
-  /*
-   *  Modified from R source pbinom.c
-   *  Mathlib : A C Library of Special Functions
-   *  Copyright (C) 1998 Ross Ihaka
-   *  Copyright (C) 2000-2015  The R Core Team
-   *  Copyright (C) 2004-2015  The R Foundation
-   */
-  template<class T> int R_finite(T x) { return std::isfinite(asDouble(x)); }
-  template<class T> int isnan(T x) { return std::isnan(asDouble(x)); }
-
-#undef ML_ERROR
-#undef MATHLIB_ERROR
-#undef MATHLIB_WARNING
-#undef MATHLIB_WARNING2
-#undef MATHLIB_WARNING3
-#undef MATHLIB_WARNING4
-#undef MATHLIB_WARNING5
-#undef ML_POSINF
-#undef ML_NEGINF
-#undef ML_NAN
-#undef M_SQRT_2dPI
-#undef ISNAN
-# define ML_ERROR(x, s) /* nothing */
-# define MATHLIB_ERROR(fmt,x) /* nothing */
-# define MATHLIB_WARNING(fmt,x) /* nothing */
-# define MATHLIB_WARNING2(fmt,x,x2) /* nothing */
-# define MATHLIB_WARNING3(fmt,x,x2,x3) /* nothing */
-# define MATHLIB_WARNING4(fmt,x,x2,x3,x4) /* nothing */
-# define MATHLIB_WARNING5(fmt,x,x2,x3,x4,x5) /* nothing */
-#define ML_POSINF	R_PosInf
-#define ML_NEGINF	R_NegInf
-#define ML_NAN		R_NaN
-#define M_SQRT_2dPI	0.797884560802865355879892119869	/* sqrt(2/pi) */
-#define ISNAN(x) (isnan(x)!=0)
-
-#define ML_ERR_return_NAN return R_NaN
-
-#define R_D__0	(log_p ? ML_NEGINF : 0.)		/* 0 */
-#define R_D__1	(log_p ? 0. : 1.)			/* 1 */
-#define R_DT_0	(lower_tail ? R_D__0 : R_D__1)		/* 0 */
-#define R_DT_1	(lower_tail ? R_D__1 : R_D__0) /* 1 */
-# define attribute_hidden __attribute__ ((visibility ("hidden")))
-
-
-  template<class Float>
-  attribute_hidden
-  Float pbinom0_raw(Float x, Float n, Float p, Float lower_tail_, Float log_p_)
-  {
-    int lower_tail = (int)trunc(lower_tail_);
-    int log_p = (int)trunc(log_p_);
-
-#ifdef IEEE_754
-    if (ISNAN(x) || ISNAN(n) || ISNAN(p))
-      return x + n + p;
-    if (!R_FINITE(n) || !R_FINITE(p)) ML_ERR_return_NAN;
-
-#endif
-    // if(R_nonint(n)) {
-    //   MATHLIB_WARNING(("non-integer n = %f"), n);
-    //   //ML_ERR_return_NAN;
-    //   return 0;
-    // }
-    n = (Float)(int)trunc(n);
-    /* PR#8560: n=0 is a valid value */
-    if(n < 0 || p < 0 || p > 1) ML_ERR_return_NAN;
-
-    if (x < 0) return R_DT_0;
-    //x = floor(x + 1e-7);
-    if (n <= x) return R_DT_1;
-    return atomic::toms708::pbeta((Float)p, (Float)(x + 1), (Float)(n - x), (int)!lower_tail, (int)log_p);
-  }
-  
-  template<class Float>
-  Float pbinom0(Float x, Float n, Float p, Float lower_tail, Float log_p)
-  {
-    return pbinom0_raw(x,n,p,lower_tail,log_p);
-  }
-
-  TMB_BIND_ATOMIC(pbinom1,11100,pbinom0(x[0], x[1], x[2], x[3], x[4]))
-
-}
-
+namespace dists {
+// TODO: Move to TMB
 template<class Type>
-Type pbinom(Type x, Type n, Type p, int lower_tail, int log_p){
-  CppAD::vector<Type> tx(6);
-  tx[0] = x;
-  tx[1] = n;
-  tx[2] = p;
-  tx[3] = lower_tail;
-  tx[4] = log_p;
-  tx[5] = 0; // extra argument for derivative order
-  Type res = my_atomic::pbinom1(tx)[0];
-  return res;
+Type pbinom(Type x, Type n, Type p) {
+  return 1. - pbeta(p, x+1, n-x);
+}
 }
 
 template<class Type>
@@ -139,13 +51,13 @@ Type dmultinom_osa(vector<Type> x, vector<Type> p, data_indicator<vector<Type>, 
   vector<int> o=order(k);
   x=x(o); p=p(o); k=k(o); l=l(o); h=h(o);
   Type logres=0;
-  Type nUnused=sum(x);
+  Type nUnused=asDouble(sum(x));
   Type pUsed=0;
   Type cdf;
   for(int i=0; i<x.size(); ++i){
     if(i!=(x.size()-1)){
       logres += k(i)*dbinom(x(i),nUnused,p(i)/(Type(1)-pUsed),true);
-      cdf = pbinom(x(i),nUnused,p(i)/(Type(1)-pUsed),true,false);
+      cdf = dists::pbinom(x(i),nUnused,p(i)/(Type(1)-pUsed));
       nUnused -= x(i);
       pUsed += p(i);
     }else{ // last index 
@@ -192,7 +104,7 @@ Type ddirichlet_osa(vector<Type> x, vector<Type> alpha, data_indicator<vector<Ty
   
   int n = alpha.size();
   Type cdf;
-  Type sx = x.sum();
+  Type sx = 1; // was: x.sum();
   Type sa = alpha.sum();
   sa -= alpha(0);
   Type logres=k(0)*dbeta(x(0),alpha(0),sa,true);
@@ -268,90 +180,31 @@ Type pbetabinom(Type x, Type N, Type alpha, Type beta, int do_log)
 template<class Type> 
 Type ddirmultinom_osa(vector<Type> obs, vector<Type> alpha, data_indicator<vector<Type>, Type> keep, int do_log = 0)
 {
-
+  
   vector<Type> k=keep;
   vector<Type> l=keep.cdf_lower;
   vector<Type> h=keep.cdf_upper;
-
+  
   vector<int> o=order(k);
   obs=obs(o); alpha=alpha(o); k=k(o); l=l(o); h=h(o);
- 
-  int dim = obs.size(); 
+  int dim = obs.size();
   Type ll = 0.0;
   vector<Type> alphas_a(2), obs_a(2);
-  for(int a = 1; a < dim; a++){
-    obs_a(0) = obs(a-1);
-    obs_a(1) = obs.tail(dim-a).sum();
-    alphas_a(0) = alpha(a-1);
-    alphas_a(1) = alpha.tail(dim-a).sum();
-    ll += k(a-1) * ddirmultinom(obs_a, alphas_a, 1); //beta-binomial, just two categories
-    Type cdf = pbetabinom(obs_a(0), obs_a.sum(), alphas_a(0), alphas_a(1),0);
+  Type alp_sum = alpha.sum();
+  Type obs_sum = asDouble(obs.sum());
+  for(int a = 0; a < dim-1; a++){
+    obs_sum -= obs[a];
+    alp_sum -= alpha[a];
+    obs_a(0) = obs(a);
+    obs_a(1) = obs_sum;
+    alphas_a(0) = alpha(a);
+    alphas_a(1) = alp_sum;
+    ll += k(a) * ddirmultinom(obs_a, alphas_a, 1); //beta-binomial, just two categories
+    Type cdf = pbetabinom(obs_a(0), obs_a.sum(), alphas_a(0), alphas_a(1), 0);
     cdf = squeeze(cdf);
-    ll += l(a-1) * log( cdf );       
-    ll += h(a-1) * log( 1.0 - cdf ); 
+    ll += l(a) * log( cdf );
+    ll += h(a) * log( 1.0 - cdf );
   }
   if(do_log == 1) return ll;
   else return exp(ll);
-}
-
-template<class Type>
-vector<Type> rlogisticnormal(vector<Type> mu, matrix<Type> S, int do_mult)
-{
-  using namespace density;
-  MVNORM_t<Type> mvnorm(S);
-  vector<Type> x = mvnorm.simulate() + mu;
-  vector<Type> obs(x.size()+1);
-  if(do_mult == 1){
-    Type accumulate = 1;
-    for(int i = 0; i < x.size(); i++) {
-      accumulate *= 1 + exp(x(i));
-      obs(i) = exp(x(i))/accumulate;
-    }
-  }
-  else {
-    for(int i = 0; i < x.size(); i++) obs(i) = exp(x(i))/(1 + sum(exp(x)));
-  }
-  obs(obs.size()-1) = obs.head(obs.size()-1).sum();
-  return(obs);
-}
-
-//the usual logistic normal
-template<class Type>
-Type dlogisticnormal(vector<Type> obs, vector<Type> mu,  matrix<Type> S, int do_mult, int do_log)
-{
-  using namespace density;
-  MVNORM_t<Type> mvnorm(S);
-
-  vector<Type> x(obs.size()-1);
-  if(do_mult == 1){
-    x = log(obs.head(obs.size()-1));
-    for(int i = 0; i < x.size(); i++) x(i) -= log(1-x.head(i+1).sum());
-  }
-  else x = log(obs.head(obs.size()-1)) - log(obs(obs.size()-1));
-  
-  Type nll = mvnorm(x-mu);
-  nll += log(obs).sum(); //jacobian
-
-  if(do_log == 1) return -nll;
-  else return exp(-nll);
-}
-
-//the logistic normal with added args for osa residuals
-template<class Type>
-Type dlogisticnormal_osa(vector<Type> obs, vector<Type> mu,  matrix<Type> S, vector<Type> keep, int do_mult, int do_log)
-{
-  using namespace density;
-  MVNORM_t<Type> mvnorm(S);
-
-  vector<Type> x(obs.size()-1);
-  if(do_mult == 1){
-    x = log(obs.head(obs.size()-1));
-    for(int i = 0; i < x.size(); i++) x(i) -= log(1-x.head(i+1).sum());
-  }
-  else x = log(obs.head(obs.size()-1)) - log(obs(obs.size()-1));
-  Type nll = mvnorm(x-mu, keep.head(x.size()));
-  if(sum(keep)>x.size()) nll += log(obs).sum(); //jacobian, do it only when osa residuals not being calculated?
-
-  if(do_log == 1) return -nll;
-  else return exp(-nll);
 }

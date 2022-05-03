@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.R
 \name{rlogistN}
 \alias{rlogistN}
-\title{Simulate Logistic-normal observations}
+\title{Simulate logistic-normal observations}
 \usage{
 rlogistN(mu, Sigma, mult = FALSE)
 }
@@ -17,8 +17,8 @@ rlogistN(mu, Sigma, mult = FALSE)
 Matrix of logistic-normal observations
 }
 \description{
-Simulate Logistic-normal observations
+Simulate logistic-normal observations
 }
 \details{
-The model ...
+This function simulates logistic-normal observations.
 }

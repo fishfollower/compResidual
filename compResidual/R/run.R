@@ -164,25 +164,28 @@ resDirM <- function(obs, alpha, ...){
 ##' Sigma <- diag(nrow(mu))
 ##' do_mult <- FALSE
 ##' o <- sapply(1:100, function(x) rlogistN(mu[,1], Sigma, do_mult))
+##' os <- apply(o, 2, function(x) logistictransf(x, mult=do_mult))
 ##' res <- reslogistN(o, mu, Sigma, do_mult)
 ##' plot(res)
 
 reslogistN <- function(obs, mu, Sigma, do_mult, ...){
   obs<-as.matrix(obs)
+  obs<- apply(obs, 2, function(x) logistictransf(x, mult=do_mult))# transform observations to use multivariate normal distribution, 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
   res <- c()
   for (k in 1:ncol(obs)){ # for each column (in case Sigma is a list)
     dat<-list()
     dat$code <- 4 # Logistic-normal
-    dat$do_mult <- as.integer(do_mult) # 0 = Additive logistic-normal, 1 = Multiplicative logistic-normal
+    #dat$do_mult <- as.integer(do_mult) 
     dat$obs<-as.vector(obs[,k])
     dat$mu<-as.vector(mu[,k])
     if (is.matrix(Sigma)) dat$Sigma <- as.matrix(Sigma) else dat$Sigma <- as.matrix(Sigma[[k]])
     param<-list(dummy=0)
     obj <- TMB::MakeADFun(dat, param, DLL="compResidual", silent=TRUE)
     opt <- nlminb(obj$par, obj$fn, obj$gr)
-    suppressWarnings(tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE, ...))
-    use <- 1:(length(dat$obs)-1) # no residual for last group
-    res <- cbind(res, tmp$residual[use])
+    tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGaussianOffMode", trace=FALSE, ...)
+    #suppressWarnings(tmp <- TMB::oneStepPredict(obj, observation.name="obs", data.term.indicator="keep", method="oneStepGeneric", trace=FALSE, ...))
+    # use <- 1:(length(dat$obs)-1) # no residual for last group
+    res <- cbind(res, tmp$residual)#[use])
   }
   class(res)<-"cres"
   res

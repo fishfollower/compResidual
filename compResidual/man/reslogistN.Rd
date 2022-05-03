@@ -33,6 +33,7 @@ mu <- matrix(0,ncol=100, nrow=5)
 Sigma <- diag(nrow(mu))
 do_mult <- FALSE
 o <- sapply(1:100, function(x) rlogistN(mu[,1], Sigma, do_mult))
+os <- apply(o, 2, function(x) logistictransf(x, mult=do_mult))
 res <- reslogistN(o, mu, Sigma, do_mult)
 plot(res)
 }

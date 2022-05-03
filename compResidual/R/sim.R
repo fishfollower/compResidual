@@ -51,3 +51,16 @@ rlogistN = function(mu, Sigma, mult=FALSE){
   return(c(p, 1-sum(p)))
 }
 
+##' Transform logistic-normal to normal observations
+##' @param p Vector of mean values 
+##' @param mult Multiplicative logistic-normal if TRUE, otherwise additive
+##' @return Transformed observations
+##' @details This function transforms logistic-normal observations to normally distributed observations with dimension (length(p)-1).
+##' @useDynLib compResidual
+##' @export
+logistictransf = function(p, mult = FALSE){
+  ps = p[-length(p)]
+  if(mult) ys = log(ps/(1-cumsum(ps))) #multiplicative
+  else ys = log(ps) - log(1-sum(ps)) #additive
+  return(ys)
+}

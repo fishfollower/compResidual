@@ -20,5 +20,5 @@ Matrix of Dirichlet-multinomial observations
 Simulate Dirichlet-multinomial observations
 }
 \details{
-The model ...
+This function simulates Dirichlet-multinomial observations.
 }

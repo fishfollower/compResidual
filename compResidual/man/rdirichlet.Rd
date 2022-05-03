@@ -18,5 +18,5 @@ Matrix of Dirichlet observations
 Simulate Dirichlet observations
 }
 \details{
-The model ...
+This function simulates Dirichlet observations.
 }
