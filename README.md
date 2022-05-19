@@ -6,6 +6,7 @@ The package is intended to be mainly useful in the situation where a purely fixe
 Can be installed by typing: 
 
 ```R
+TMB:::install.contrib("https://github.com/vtrijoulet/OSA_multivariate_dists/archive/main.zip")
 devtools::install_github("fishfollower/compResidual/compResidual")
 ```
 

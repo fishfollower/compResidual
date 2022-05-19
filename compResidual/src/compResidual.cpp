@@ -1,6 +1,7 @@
 #define TMB_LIB_INIT R_init_compResidual
 #include <TMB.hpp>
-#include "../inst/include/distr.hpp"
+#include <contrib/OSA_multivariate_dists-main/distr.hpp>
+
 
 template<class Type>
 Type objective_function<Type>::operator() ()
