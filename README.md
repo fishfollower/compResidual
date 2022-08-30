@@ -74,8 +74,18 @@ More details are available in the following paper \url{...}
 
 Additional data for Gulf of Maine Haddock used in the paper is supplied in the file <a href="GOMhaddock.RData">GOMhaddock.RData</a>. 
 
+```R
+# example for fleet 2
+load("GOMhaddock.RData") # load df 
+obs<-GOMhaddock[GOMhaddock$Fleet==2, grep("^obsP",colnames(GOMhaddock))] # extract observations fleet 2
+obs<-round(obs*GOMhaddock[GOMhaddock$Fleet==2, "ESS"]) # multiply by effective sample size and round  
+pred<-GOMhaddock[GOMhaddock$Fleet==2, grep("^predP",colnames(GOMhaddock))] # extract predictions fleet 2
 
+library(compResidual) # load library
+res<-resMulti(t(obs), t(pred)) # calculate residuals 
+plot(res) 
+```
 
-
-
-
+<p align="center">
+  <img src="figs/fig2.png?raw=true">
+</p>
