@@ -91,6 +91,8 @@ library(compResidual)
 set.seed(123)
 ## calculate residuals:
 res<-resMulti(t(obs), t(pred)) 
+## Add names to sample number for plotting:
+colnames(res) <- GOMhaddock[GOMhaddock$Fleet==1,"Year"]
 ## plot diagnostics:
 plot(res) 
 ```

@@ -20,6 +20,7 @@ plot.cres<-function(x, pick_one=NULL, ...){
       op <- par(mfrow=c(1,1))
     }
   if (!is.null(rownames(x))) yname <- rownames(x) else yname=1:nrow(x)
+  if (!is.null(colnames(x))) xname <- colnames(x) else xname=1:ncol(x)
   col <- rep(1:nrow(x), ncol(x))
   # bubble plot
   if (pick_one==1 || missing(pick_one)) {
@@ -40,8 +41,13 @@ plot.cres<-function(x, pick_one=NULL, ...){
     }
     sample <- rep(1:ncol(x), each=nrow(x))
     composition <- rep(1:nrow(x), ncol(x))
-    plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n")
-    axis(2, at=1:nrow(x), labels = yname)
+    plotby(sample, composition, x, bubblescale = 0.3, xlab="", yaxt="n", xaxt="n",...)
+    xTicks <- pretty(1:ncol(x))
+    xTicks <- xTicks[xTicks!=0]
+    yTicks <- pretty(1:nrow(x))
+    yTicks <- yTicks[yTicks!=0]
+    axis(1, at=xTicks, labels = xname[xTicks])
+    axis(2, at=yTicks, labels = yname[yTicks])
     add_legend(x, cex.text=0.8, bubblescale = 0.3)
   }
   # ACF
