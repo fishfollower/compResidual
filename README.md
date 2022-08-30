@@ -58,7 +58,19 @@ Instead of providing the probability matrix it is also allowed to provide the pr
 
 ### One-step-ahead (OSA) quantile residuals for continuous non-normal independent observations
 
-If the observations $(x_1,\ldots,x_n)$ are continuous, univariate, and independent, but originating from a distribution of which is not a normal distribution, but has cumulative distribution function (cdf) $F_x$, then independent and normally distributed residuals can be obtained via transformation. First, transforming the observations via the cdf will lead to quantities which follow a uniform distribution $u_i = F_x(x_i)$. This can be explained by the fact that $u_i \in (0,1)$ and the cdf of $u$ is $F_u(u) = P(F_x(X)<u) = P(X<F^{-1}_x(u)) = F_x(F^{-1}_x(u)) = u$, which is the distribution function for the uniform distribution. Secondly, transforming these uniformly distributed quantities $u_1,...,u_k$ by the inverse cdf of the standard normal distribution $\Phi^{-1}$ will lead to residuals which follow a standard normal distribution if the model is correct. This can be seen by calculating the cdf for the transformed $P(\Phi^{-1}(U)<r) = P(U<\Phi(r)) = \Phi(r)$ , so the wanted cdf. Collectively these quantile residuals are defined simply as: $r_i =\Phi^{-1}(F_x(x_i))$. The model is defining the cdf of the observations, so if the model is incorrect, then the residuals will deviate systematically from a standard normal distribution. 
+If the observations $(x_1,\ldots,x_n)$ are continuous, univariate, and independent, but originating from a distribution of which is not a normal distribution, but has cumulative distribution function (cdf) $F_x$, then independent and normally distributed residuals can be obtained via transformation. First, transforming the observations via the cdf will lead to quantities which follow a uniform distribution $u_i = F_x(x_i)$. This can be explained by the fact that $u_i \in (0,1)$ and the cdf of $u$ is 
+
+```math
+F_u(u) = P(F_x(X)<u) = P(X<F^{-1}_x(u)) = F_x(F^{-1}_x(u)) = u,
+```
+
+which is the distribution function for the uniform distribution. Secondly, transforming these uniformly distributed quantities $u_1,...,u_k$ by the inverse cdf of the standard normal distribution $\Phi^{-1}$ will lead to residuals which follow a standard normal distribution if the model is correct. This can be seen by calculating the cdf for the transformed 
+
+```math
+ P(\Phi^{-1}(U)<r) = P(U<\Phi(r)) = \Phi(r),
+ ```
+
+so the wanted cdf. Collectively these quantile residuals are defined simply as: $r_i =\Phi^{-1}(F_x(x_i))$. The model is defining the cdf of the observations, so if the model is incorrect, then the residuals will deviate systematically from a standard normal distribution. 
 
 ### OSA randomized quantile residuals for discrete independent observations 
 
