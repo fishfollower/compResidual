@@ -10,12 +10,13 @@ TMB:::install.contrib("https://github.com/vtrijoulet/OSA_multivariate_dists/arch
 devtools::install_github("fishfollower/compResidual/compResidual")
 ```
 
-(To ensure only installing in 64-bit some windows users may need to install with:
+To ensure only installing in 64-bit some windows users may need to install with:
 
 ```R
+TMB:::install.contrib("https://github.com/vtrijoulet/OSA_multivariate_dists/archive/main.zip")
 devtools::install_github("fishfollower/compResidual/compResidual", INSTALL_opts=c("--no-multiarch"))
 ```
-)
+
 
 ## A quick example:
 
@@ -75,14 +76,22 @@ More details are available in the following paper \url{...}
 Additional data for Gulf of Maine Haddock used in the paper is supplied in the file <a href="GOMhaddock.RData">GOMhaddock.RData</a>. 
 
 ```R
-# example for fleet 2
-load("GOMhaddock.RData") # load df 
-obs<-GOMhaddock[GOMhaddock$Fleet==2, grep("^obsP",colnames(GOMhaddock))] # extract observations fleet 2
-obs<-round(obs*GOMhaddock[GOMhaddock$Fleet==2, "ESS"]) # multiply by effective sample size and round  
-pred<-GOMhaddock[GOMhaddock$Fleet==2, grep("^predP",colnames(GOMhaddock))] # extract predictions fleet 2
+# Example for fleet 1
+## load data file:
+load("GOMhaddock.RData") 
+## extract observations fleet 1:
+obs<-GOMhaddock[GOMhaddock$Fleet==1, grep("^obsP",colnames(GOMhaddock))]
+## multiply by effective sample size and round:
+obs<-round(obs*GOMhaddock[GOMhaddock$Fleet==1, "ESS"])
+## extract predictions fleet 1:
+pred<-GOMhaddock[GOMhaddock$Fleet==1, grep("^predP",colnames(GOMhaddock))] 
 
-library(compResidual) # load library
-res<-resMulti(t(obs), t(pred)) # calculate residuals 
+## load library:
+library(compResidual) 
+set.seed(123)
+## calculate residuals:
+res<-resMulti(t(obs), t(pred)) 
+## plot diagnostics:
 plot(res) 
 ```
 
