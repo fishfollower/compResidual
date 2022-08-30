@@ -68,11 +68,13 @@ If the observations are discrete, but still univariate and independent, then the
 
 The OSA residual of the i'th observation is computed using one of the methods described above depending on the observations being continuous or discrete (quantile or randomized quantile residuals), but instead of using the cdf of the observation in isolation, the cdf of the predicted distribution of the i'th prediction conditioned on all previous observations is used. This allows the resulting residuals to become independent standard normal if the model is correct. 
 
+More details are available in the following paper \url{...}
+
 ### Additional data examples (Gulf of Maine Haddock)
 
+Additional data for Gulf of Maine Haddock used in the paper is supplied in the file <a href="GOMhaddock.RData">GOMhaddock.RData</a>. 
 
 
-More details are available in the following paper \url{...}
 
 
 
