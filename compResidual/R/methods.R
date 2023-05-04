@@ -2,6 +2,7 @@
 ##' @method plot cres
 ##' @param  x Residual object as returned from one of the residual functions
 ##' @param pick_one Number of the plot to provide if one of the 4 plots printed by default needs to be extracted 
+##' @param maxLag Maximum lag to use for ACF plot
 ##' @param  ... extra arguments
 ##' @importFrom graphics par plot legend abline lines points text
 ##' @importFrom stats qqnorm
@@ -12,7 +13,7 @@
 ##' Plot 3: Q-Q plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)
 ##' Plot 4: Simple plot of the residuals, each color is a row of the residual matrix (i.e. compositional group)   
 ##' @export
-plot.cres<-function(x, pick_one=NULL, ...){
+plot.cres<-function(x, pick_one=NULL, maxLag=NULL, ...){
   if (missing(pick_one)){
     op <- par(mfrow=c(2,2), mar=c(4,4,2,2)) 
     } else {
@@ -59,7 +60,8 @@ plot.cres<-function(x, pick_one=NULL, ...){
     low <- as.numeric(min(c(acfr$acf, acfc$acf, acfd$acf)))
     ylow <- max(abs(c(ci,low)))
     lcol=c("#7fc97f", "#beaed4", "#fdc086")
-    plot(y=as.vector(acfr$acf), x=as.vector(acfr$lag), type = "h", ylim=c(-ylow*1.2,1), col=lcol[1], lwd=2, ylab="ACF", xlab="lag", ...)
+    if (is.null(maxLag)) maxLag <- min(c(10, max(length(acfr$acf), length(acfc$acf), length(acfc$acf))-1))
+    plot(y=as.vector(acfr$acf), x=as.vector(acfr$lag), type = "h", ylim=c(-ylow*1.2,1), xlim=c(0, maxLag), col=lcol[1], lwd=2, ylab="ACF", xlab="lag", ...)
     lines(y=as.vector(acfc$acf), x=as.vector(acfc$lag)+0.05, type = "h", col=lcol[2], lwd=2)
     lines(y=as.vector(acfd$acf), x=as.vector(acfd$lag)+0.1, type = "h", col=lcol[3], lwd=2)
     abline(h=0)

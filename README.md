@@ -7,14 +7,14 @@ Can be installed by typing:
 
 ```R
 TMB:::install.contrib("https://github.com/vtrijoulet/OSA_multivariate_dists/archive/main.zip")
-devtools::install_github("fishfollower/compResidual/compResidual")
+remotes::install_github("fishfollower/compResidual/compResidual", force=TRUE)
 ```
 
 To ensure only installing in 64-bit some windows users may need to install with:
 
 ```R
 TMB:::install.contrib("https://github.com/vtrijoulet/OSA_multivariate_dists/archive/main.zip")
-devtools::install_github("fishfollower/compResidual/compResidual", INSTALL_opts=c("--no-multiarch"))
+remotes::install_github("fishfollower/compResidual/compResidual", INSTALL_opts=c("--no-multiarch"), force=TRUE)
 ```
 
 

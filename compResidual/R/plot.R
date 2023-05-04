@@ -200,7 +200,7 @@ acf_res <- function(x, what){
     v <- cbind(x, tmp)
     v <- as.vector(t(v))
     v <- v[-((length(v)-dim[2]+1):length(v))]
-    return(acf(v, na.action = na.pass, lag.max = (dim[1]-1), plot = FALSE))
+    return(acf(v, na.action = na.pass, lag.max = (dim[2]-1), plot = FALSE))
   } else {
     if (what=="column"){
       v <- rbind(x, tmp)
@@ -214,7 +214,7 @@ acf_res <- function(x, what){
         tmp[idx] <- x
         v <- rbind(tmp, tmp*NA)
         v <- as.vector(v)
-        return(acf(v, na.action = na.pass, lag.max = (dim[1]-1), plot = FALSE))
+        return(acf(v, na.action = na.pass, lag.max = (min(dim)-1), plot = FALSE))
       } else {
         stop("The argument 'what' should be 'row', 'column', or 'diagonal'")
       }

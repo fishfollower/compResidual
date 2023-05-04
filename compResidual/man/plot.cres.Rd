@@ -4,12 +4,14 @@
 \alias{plot.cres}
 \title{Plot residual object}
 \usage{
-\method{plot}{cres}(x, pick_one = NULL, ...)
+\method{plot}{cres}(x, pick_one = NULL, maxLag = NULL, ...)
 }
 \arguments{
 \item{x}{Residual object as returned from one of the residual functions}
 
 \item{pick_one}{Number of the plot to provide if one of the 4 plots printed by default needs to be extracted}
+
+\item{maxLag}{Maximum lag to use for ACF plot}
 
 \item{...}{extra arguments}
 }
