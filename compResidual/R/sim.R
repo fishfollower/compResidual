@@ -23,6 +23,7 @@ rdirichlet <- function(n,alpha){
 ##' @param alpha concentration parameter
 ##' @return Matrix of Dirichlet-multinomial observations 
 ##' @details This function simulates Dirichlet-multinomial observations.
+##' @importFrom stats rmultinom
 ##' @useDynLib compResidual
 ##' @export
 
