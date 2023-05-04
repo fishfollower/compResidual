@@ -42,6 +42,7 @@ rdirM <- function(n,N,alpha){
 ##' @param mult Multiplicative logistic-normal if TRUE, otherwise additive
 ##' @return Matrix of logistic-normal observations
 ##' @details This function simulates logistic-normal observations.
+##' @importFrom MASS mvrnorm
 ##' @useDynLib compResidual
 ##' @export
 rlogistN = function(mu, Sigma, mult=FALSE){

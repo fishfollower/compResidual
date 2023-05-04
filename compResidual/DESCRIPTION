@@ -5,7 +5,7 @@ Date: 2022-01-13
 Authors@R: c(person("Vanessa","Trijoulet",role=c("aut","cre"), email="vtri@aqua.dtu.dk"), person("Anders","Nielsen",role="aut"))
 Description: Residual calculation for compositional observations ...
 License: GPL-2
-Imports: TMB
+Imports: TMB, MASS
 LinkingTo: TMB, RcppEigen
 LazyData: TRUE
 BugReports: https://github.com/fishfollower/compResidual/issues
